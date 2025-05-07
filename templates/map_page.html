@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Tìm đường thực tế với OSM</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/map_style.css') }}">
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <a href="{{ url_for('logout') }}" class="logout-button">Đăng xuất</a>
+
+  <div class="input-area">
+      <div class="input-row">
+          <div class="input-pair">
+              <label for="startPoint">Điểm xuất phát:</label>
+              <input type="text" id="startPoint" placeholder="Chọn trên bản đồ hoặc nhập tọa độ">
+          </div>
+          <div class="input-pair">
+              <label for="endPoint">Điểm đích đến:</label>
+              <input type="text" id="endPoint" placeholder="Chọn trên bản đồ hoặc nhập tọa độ">
+          </div>
+      </div>
+      <button id="selectOnMapButton">Chọn trên bản đồ</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="routeInfo">
+    <p>Tổng quãng đường: <span id="routeDistance">---</span> km</p>
+  </div>
+  
+  <script src="{{ url_for('static', filename='js/map_script.js') }}"></script> 
+
+</body>
+</html>

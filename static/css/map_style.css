@@ -1,0 +1,98 @@
+/* static/css/map_style.css */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif; /* Thêm font-family chung */
+  }
+  
+  .input-area {
+    padding: 10px;
+    background: white;
+    z-index: 1000;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid #eee; /* Thêm đường viền */
+  }
+  
+  .input-row {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+  }
+  
+  .input-pair {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-basis: 0;
+      flex-grow: 1;
+      min-width: 200px;
+  }
+  
+  .input-pair label { /* Thêm style cho label */
+      font-weight: bold;
+      font-size: 0.9em;
+  }
+  
+  .input-pair input[type="text"] { /* Style cho input text */
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      flex-grow: 1;
+  }
+  
+  #selectOnMapButton { /* Style cho nút */
+      padding: 8px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      align-self: flex-start; /* Căn nút */
+  }
+  #selectOnMapButton:hover {
+      background-color: #0056b3;
+  }
+  
+  #map {
+    flex-grow: 1;
+    height: auto;
+  }
+  
+  #routeInfo {
+      padding: 10px;
+      background-color: #f9f9f9;
+      text-align: center;
+      font-size: 1em;
+      z-index: 1000;
+      position: relative;
+      border-top: 1px solid #eee; /* Thêm đường viền */
+  }
+  #routeInfo p {
+      margin: 5px 0;
+  }
+  
+  .logout-button { /* Thêm CSS cho nút Logout */
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 8px 12px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9em;
+      z-index: 1001; /* Cao hơn input-area */
+  }
+  .logout-button:hover {
+      background-color: #c82333;
+  }

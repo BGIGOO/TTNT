@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập & Tạo tài khoản</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <div id="message" class="error-message"></div>
+
+    <form id="login-form">
+      <h2>Đăng Nhập</h2>
+      <input type="text" name="username" placeholder="Tên đăng nhập" required>
+      <input type="password" name="password" placeholder="Mật khẩu" required>
+      <button type="submit">Đăng nhập</button>
+      <div class="toggle">
+        Chưa có tài khoản? <a onclick="toggleForm()">Tạo tài khoản</a>
+      </div>
+    </form>
+
+    <form id="register-form" class="hidden">
+      <h2>Tạo tài khoản</h2>
+      <input type="text" name="new_username" placeholder="Tên đăng nhập" required>
+      <input type="email" name="email" placeholder="Email (tùy chọn)">
+      <input type="password" name="new_password" placeholder="Mật khẩu" required>
+      <input type="password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
+      <button type="submit">Đăng ký</button>
+      <div class="toggle">
+        Đã có tài khoản? <a onclick="toggleForm()">Đăng nhập</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+
+</body>
+</html>

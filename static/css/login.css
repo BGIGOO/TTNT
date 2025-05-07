@@ -1,0 +1,67 @@
+/* static/css/login.css */
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0; /* Thêm để reset margin mặc định của body */
+  }
+  .container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 320px;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333; /* Thêm màu cho tiêu đề */
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] { /* Áp dụng chung cho các input */
+    width: calc(100% - 22px); /* Điều chỉnh width để padding không làm tràn */
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Đảm bảo padding và border nằm trong width */
+  }
+  button[type="submit"] { /* Cụ thể hơn cho nút submit */
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Đổi màu nút chính */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 16px; /* Thêm kích thước chữ */
+  }
+  button[type="submit"]:hover {
+    background-color: #0056b3; /* Màu hover tối hơn */
+  }
+  .toggle {
+    text-align: center;
+    margin-top: 15px;
+  }
+  .toggle a {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .toggle a:hover {
+    text-decoration: underline;
+  }
+  .hidden {
+    display: none;
+  }
+  .error-message { /* Kiểu cho thông báo lỗi */
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+  }
