@@ -59,6 +59,7 @@ map.on('click', function(e) {
     $('#startPoint').val('');
     $('#endPoint').val('');
     $('#routeDistance').text("---");
+    $('#routeTime').text("---");
   }
 
   const toaDoClick = [e.latlng.lat, e.latlng.lng];
@@ -79,18 +80,57 @@ map.on('click', function(e) {
     $.getJSON(url, function(duLieu) {
         if (duLieu && duLieu.route && duLieu.route.length > 0) {
             veDuongDi(duLieu.route);
+
+            // Hiển thị quãng đường
             if (typeof duLieu.distance !== 'undefined') {
                 const distanceInKm = (duLieu.distance / 1000).toFixed(2);
                 $('#routeDistance').text(distanceInKm);
             } else {
                  $('#routeDistance').text("N/A");
             }
+
+            // Hiển thị thời gian di chuyển dự kiến
+            if (typeof duLieu.travel_time_seconds !== 'undefined') {
+                const totalSeconds = parseInt(duLieu.travel_time_seconds, 10);
+                if (totalSeconds > 0) {
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    const seconds = totalSeconds % 60;
+
+                    let timeString = "";
+                    if (hours > 0) {
+                        timeString += hours + " giờ ";
+                    }
+                    if (minutes > 0 || hours > 0) { // Hiển thị phút nếu có giờ hoặc có phút
+                        timeString += minutes + " phút ";
+                    }
+                    // Chỉ hiển thị giây nếu thời gian < 1 phút, hoặc nếu muốn chi tiết hơn
+                    if (hours === 0 && minutes === 0 && seconds > 0) {
+                         timeString += seconds + " giây";
+                    } else if (hours === 0 && minutes > 0 && seconds > 0) { // Thêm giây nếu có phút và giây > 0
+                         timeString += seconds + " giây";
+                    }
+
+
+                    $('#routeTime').text(timeString.trim() || "Dưới 1 phút");
+                } else if (totalSeconds === 0 && duLieu.distance === 0) { // Trường hợp điểm đầu cuối trùng nhau
+                     $('#routeTime').text("0 phút");
+                }
+                 else {
+                    $('#routeTime').text("Không đáng kể");
+                }
+            } else {
+                 $('#routeTime').text("N/A");
+            }
+
         } else if (duLieu && duLieu.error) {
-            alert(duLieu.error);
+            // ... (xử lý lỗi như cũ) ...
             $('#routeDistance').text("Lỗi");
+            $('#routeTime').text("Lỗi"); // Reset thời gian khi có lỗi
         } else {
-            alert("Không tìm thấy đường đi.");
+            // ... (xử lý không tìm thấy đường như cũ) ...
             $('#routeDistance').text("Không tìm thấy");
+            $('#routeTime').text("Không tìm thấy"); // Reset thời gian
         }
     }).fail(function() {
         alert("Lỗi kết nối khi tìm đường.");

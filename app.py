@@ -176,7 +176,7 @@ def get_route_api(): # Đổi tên hàm để tránh trùng với module 'route'
 
         route_coords = [(G.nodes[n]['y'], G.nodes[n]['x']) for n in route_nodes]
         
-        total_distance = 0
+        total_distance_actual = 0 # Đổi tên biến này để rõ ràng hơn
         for i in range(len(route_nodes) - 1):
             u = route_nodes[i]
             v = route_nodes[i+1]
@@ -187,8 +187,26 @@ def get_route_api(): # Đổi tên hàm để tránh trùng với module 'route'
                     if 'length' in edge_data_dict[key]:
                          min_length_edge = min(min_length_edge, edge_data_dict[key]['length'])
                 if min_length_edge != float('inf'):
-                    total_distance += min_length_edge
-        return jsonify({'route': route_coords, 'distance': total_distance})
+                    total_distance_actual += min_length_edge # Cộng dồn vào biến này
+
+        # Giả sử tốc độ trung bình là 30 km/h cho việc di chuyển trong đô thị
+        AVERAGE_SPEED_KMH = 20.0 # km/h
+        # Hoặc bạn có thể làm cho nó linh hoạt hơn, ví dụ, nhận từ request.args nếu muốn
+        # ... (vòng lặp tính total_distance như hiện tại) ...
+        # total_distance_meters = total_distance # (Nếu biến của bạn tên là total_distance)
+
+        estimated_travel_time_seconds = 0
+        if AVERAGE_SPEED_KMH > 0 and total_distance_actual > 0:
+            total_distance_km = total_distance_actual / 1000.0
+            time_hours = total_distance_km / AVERAGE_SPEED_KMH
+            estimated_travel_time_seconds = time_hours * 3600 # Chuyển sang giây
+
+        return jsonify({
+            'route': route_coords,
+            'distance': total_distance_actual, # TRẢ VỀ BIẾN ĐÚNG (quãng đường bằng mét)
+            'travel_time_seconds': round(estimated_travel_time_seconds)
+        })
+    
     except ValueError:
         return jsonify({'error': 'Dữ liệu tọa độ không hợp lệ.'}), 400
     except Exception as e:
