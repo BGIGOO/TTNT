@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Tìm đường thực tế với OSM</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/map_style.css') }}" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+</head>
+<body>
+  <div id="sidebar">
+    <div class="input-group">
+      <label for="start">Nhập điểm đi:</label>
+      <input
+        id="start"
+        type="text"
+        placeholder="Nhập hoặc chọn trên bản đồ"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="input-group">
+      <label for="end">Nhập điểm đến:</label>
+      <input
+        id="end"
+        type="text"
+        placeholder="Nhập hoặc chọn trên bản đồ"
+        autocomplete="off"
+      />
+    </div>
+
+
+    <div class="button-group">
+      <button id="btn-route">XÁC NHẬN</button>
+    </div>
+
+    <label class="suggestion-label">Gợi ý địa điểm:</label>
+    <div id="dynamic-suggestions-list-container"></div>
+
+    <div class="results-info">
+      <p>
+        Thời gian di chuyển ước tính:
+        <span id="estimated-time">-- Phút</span>
+      </p>
+      <p>
+        Tổng quãng đường:
+        <span id="total-distance">-- Km</span>
+      </p>
+    </div>
+
+    <div class="button-group reset-group">
+        <button onclick="clearAllData()">Xóa tất cả & Đặt lại</button>
+    </div>
+
+    <div class="reset-group">
+        <a href="{{ url_for('logout') }}" class="logout-button">Đăng xuất</a>
+    </div>
+        
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{{ url_for('static', filename='js/map_script.js') }}"></script>
+</body>
+</html>
