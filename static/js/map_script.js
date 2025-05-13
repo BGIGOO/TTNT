@@ -1,20 +1,26 @@
+// Biến L trong đoạn code là một biến toàn cục được tạo ra bởi thư viện Leaflet.js  (chữ viết tắt của Leaflet).
+// một thư viện JavaScript mã nguồn mở dùng để hiển thị bản đồ tương tác.
 const map = L.map('map').setView([10.848015315160042, 106.78667009709487], 15); // Zoom out một chút
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     let markers = [];
-    let routeLine;
-    const center = { lat: 10.762622, lng: 106.660172 };
-    const maxDist = 30; // km, bạn có thể đặt lại nếu cần kiểm tra khoảng cách
+    let routeLine; // Đường đi
+    const center = { lat: 10.848015, lng: 106.786670 };
 
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
     const dynamicSuggestionsContainer = document.getElementById('dynamic-suggestions-list-container');
     const estimatedTimeEl = document.getElementById('estimated-time');
     const totalDistanceEl = document.getElementById('total-distance');
-
-
+    const dotIcon = L.icon({
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg',
+      iconSize: [10, 10], // kích thước biểu tượng
+      iconAnchor: [6, 6], // tâm biểu tượng là điểm đặt
+      popupAnchor: [0, -6]
+    });
+  
     function addMarker(latlng, label, inputToUpdate) {
       const marker = L.marker(latlng).addTo(map).bindPopup(label).openPopup();
       markers.push(marker);
@@ -24,19 +30,31 @@ const map = L.map('map').setView([10.848015315160042, 106.78667009709487], 15); 
         inputToUpdate.dataset.selectedLng = latlng[1];
       }
     }
-
+    function addMarker1(latlng, label, inputToUpdate) {
+      const marker = L.marker(latlng, { icon: dotIcon }).addTo(map);
+      markers.push(marker);
+      if (inputToUpdate) {
+        inputToUpdate.value = `${latlng[0].toFixed(6)}, ${latlng[1].toFixed(6)}`;
+        inputToUpdate.dataset.selectedLat = latlng[0];
+        inputToUpdate.dataset.selectedLng = latlng[1];
+      }
+    }
+    
+    // Hàm tính khoảng cách và thời gian
     function drawRoute(routeData) {
       if (routeLine) map.removeLayer(routeLine);
       routeLine = L.polyline(routeData.route, { color: 'blue' }).addTo(map);
+      // hàm sẽ đánh dấu các node trên đường đi
+      // for (let i = 0; i < routeData.route.length - 1; i++) {
+      //       addMarker1(routeData.route[i]);}
+
       map.fitBounds(routeLine.getBounds());
 
       if (routeData.distance_km !== undefined && routeData.estimated_time_minutes !== undefined) {
         totalDistanceEl.textContent = routeData.distance_km + " Km";
         estimatedTimeEl.textContent = routeData.estimated_time_minutes + " Phút";
 
-        console.log("đã nhảy vô đây11111")
       } else {
-        console.log("đã nhảy vô2222222")
         // Tính toán dự phòng phía client nếu backend không trả về
         let totalDistanceKmClient = 0;
         for (let i = 0; i < routeData.route.length - 1; i++) {
@@ -54,10 +72,13 @@ const map = L.map('map').setView([10.848015315160042, 106.78667009709487], 15); 
 
         const averageSpeedKmph = 20; // Tốc độ đi bộ trung bình
         const estimatedTimeHours = totalDistanceKmClient / averageSpeedKmph;
-        estimatedTimeEl.textContent = Math.round(estimatedTimeHours * 60) + " Phút";
+        if (totalDistanceKmClient > 0) {
+          estimatedTimeEl.textContent = Math.round(estimatedTimeHours * 60)+1 + " Phút";
+        }
+        else estimatedTimeEl.textContent = Math.round(estimatedTimeHours * 60) + " Phút";
       }
     }
-
+    // Hàm geocode sử dụng Photon API
     async function geocode(address) {
       // Ưu tiên tìm kiếm gần vị trí trung tâm bản đồ hoặc vị trí hiện tại (nếu có)
       const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&lat=${center.lat}&lon=${center.lng}&limit=7`;
@@ -108,17 +129,18 @@ const map = L.map('map').setView([10.848015315160042, 106.78667009709487], 15); 
       // Tuy nhiên, để trực quan hơn, ta nên đảm bảo marker được hiển thị:
       markers.forEach(m => map.removeLayer(m)); // Xóa marker cũ trước
       markers = [];
-      addMarker([parseFloat(startLat), parseFloat(startLng)], "Điểm đi: " + startInput.value);
-      addMarker([parseFloat(endLat), parseFloat(endLng)], "Điểm đến: " + endInput.value);
+      addMarker([parseFloat(startLat), parseFloat(startLng)], "Điểm đi" );
+      addMarker([parseFloat(endLat), parseFloat(endLng)], "Điểm đến" );
 
 
       const url = `/route?orig_lat=${startLat}&orig_lon=${startLng}&dest_lat=${endLat}&dest_lon=${endLng}`;
       $.getJSON(url, data => {
         if (data.route && data.route.length > 0) {
 
+            // kiểm tra dữ liệu trong route
             console.log("Route data du lieu:", data);
 
-            drawRoute(data); // data giờ chứa cả route, distance_km, estimated_time_minutes
+            drawRoute(data); //gọi hàm vẽ dựa trên data route
         } else {
             alert(data.error || "Không tìm thấy đường đi. Vui lòng thử lại với các điểm khác.");
             totalDistanceEl.textContent = "-- Km";
@@ -190,7 +212,7 @@ const map = L.map('map').setView([10.848015315160042, 106.78667009709487], 15); 
     setupAutocomplete(startInput);
     setupAutocomplete(endInput);
 
-    // --- KHÔI PHỤC CHỨC NĂNG CLICK TRÊN BẢN ĐỒ ---
+    // --- CHỨC NĂNG CLICK TRÊN BẢN ĐỒ ---
     map.on('click', function(e) {
       const clickedLat = e.latlng.lat;
       const clickedLng = e.latlng.lng;

@@ -8,9 +8,10 @@ from flask import (Flask, request, jsonify, send_from_directory,
                    render_template, redirect, url_for, session, flash)
 import os # Cần cho secret_key
 from functools import wraps # Để tạo decorator yêu cầu đăng nhập
+import time
 
 # Import các hàm từ module pathfinding
-from core_logic.pathfinding import heuristic, astar_path_custom, find_nearest_node_haversine
+from core_logic.pathfinding import heuristic1, heuristic2, heuristic3, heuristic4, astar_path_custom, Dijkstra, find_nearest_node_haversine
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 
@@ -22,14 +23,14 @@ CORS(app)
 app.secret_key = os.urandom(24) # Hoặc một chuỗi ngẫu nhiên cố định
 geolocator = Nominatim(user_agent="phan mem tim duong di")
 
-#khoi tao du lieu tai khoan
+#khoi tao du lieu tai khoan demo
 users_db = {
     "manh": {"password": "1", "email": "user1@example.com"},
     "user2": {"password": "password2", "email": "user2@example.com"}
 }
 
 print("Đang tải bản đồ đường phố...")
-G = ox.graph_from_point((10.848015315160042, 106.78667009709487), dist=3000, network_type='drive', simplify=True)
+G = ox.graph_from_point((10.848015315160042, 106.78667009709487), dist=1000, network_type='drive', simplify=True)
 print("Tải bản đồ xong.")
 
 def login_required(f):
@@ -115,11 +116,15 @@ def get_route():
     dest_node = find_nearest_node_haversine(G, dest_lon, dest_lat)
 
     # Tìm đường bằng A*
-    route = astar_path_custom(G, orig_node, dest_node, heuristic_func=heuristic, weight='length')
+    route = astar_path_custom(G, orig_node, dest_node, heuristic_func=heuristic2, weight='length')
+    #route = Dijkstra(G, orig_node, dest_node, heuristic_func=heuristic1, weight='length')
 
     route_coords = [(G.nodes[n]['y'], G.nodes[n]['x']) for n in route]
 
-    print("Đây là: ",route_coords)
+    # print("\nĐây: ",orig_node," va ",dest_node,"\n")
+    # print("\nĐây là : ",route,"\n")
+    # print("\nĐây là ds node: ",route_coords,"\n")
+    
     return jsonify({'route': route_coords})
 
 if __name__ == '__main__':

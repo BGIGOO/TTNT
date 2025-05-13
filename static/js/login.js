@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (messageDiv) messageDiv.textContent = result.message || 'Đăng ký thành công! Vui lòng đăng nhập.';
                     else alert(result.message || 'Đăng ký thành công! Vui lòng đăng nhập.');
                     toggleForm(); // Chuyển về form đăng nhập
-                    loginForm.reset(); // Xóa các trường của form đăng nhập (nếu muốn)
+                    loginForm.reset(); // Xóa các trường của form đăng nhập 
                     registerForm.reset(); // Xóa các trường của form đăng ký
                 } else {
                     if (messageDiv) messageDiv.textContent = result.message || 'Đăng ký thất bại.';
