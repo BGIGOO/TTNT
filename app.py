@@ -1,19 +1,13 @@
 import osmnx as ox
-from sklearn.metrics.pairwise import euclidean_distances
-import numpy as np
-import networkx as nx
 from flask_cors import CORS
 from flask import Flask, render_template, request, redirect, url_for
 from flask import (Flask, request, jsonify, send_from_directory,
                    render_template, redirect, url_for, session, flash)
 import os # Cần cho secret_key
 from functools import wraps # Để tạo decorator yêu cầu đăng nhập
-import time
-
 # Import các hàm từ module pathfinding
 from core_logic.pathfinding import heuristic1, heuristic2, heuristic3, heuristic4, astar_path_custom, Dijkstra, find_nearest_node_haversine
 from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 
 app = Flask(__name__)
 CORS(app)
@@ -84,12 +78,12 @@ def register_user():
         return jsonify({"success": False, "message": "Tên đăng nhập và mật khẩu không được để trống."}), 400
     
     if username in users_db:
-        return jsonify({"success": False, "message": "Tên đăng nhập đã tồn tại."}), 409 # Conflict
+        return jsonify({"success": False, "message": "Tên đăng nhập đã tồn tại."}), 409
     
     # Trong thực tế: hash mật khẩu trước khi lưu
     users_db[username] = {"password": password, "email": email}
     print(f"Người dùng mới đăng ký: {username}, Cơ sở dữ liệu người dùng hiện tại: {users_db}") # Log để kiểm tra
-    return jsonify({"success": True, "message": "Đăng ký thành công! Vui lòng đăng nhập."}), 201 # Created
+    return jsonify({"success": True, "message": "Đăng ký thành công! Vui lòng đăng nhập."}), 201
 
 @app.route('/logout')
 @login_required # Đảm bảo người dùng đã đăng nhập mới có thể logout
@@ -116,8 +110,8 @@ def get_route():
     dest_node = find_nearest_node_haversine(G, dest_lon, dest_lat)
 
     # Tìm đường bằng A*
-    route = astar_path_custom(G, orig_node, dest_node, heuristic_func=heuristic2, weight='length')
-    #route = Dijkstra(G, orig_node, dest_node, heuristic_func=heuristic1, weight='length')
+    route = astar_path_custom(G, orig_node, dest_node, heuristic_func=heuristic4, weight='length')
+    # route = Dijkstra(G, orig_node, dest_node, heuristic_func=heuristic1, weight='length')
 
     route_coords = [(G.nodes[n]['y'], G.nodes[n]['x']) for n in route]
 

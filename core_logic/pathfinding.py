@@ -150,54 +150,58 @@ def heuristic4(graph, u_id, v_id):
 
 #Chạy A*
 def astar_path_custom(graph, start_node, end_node, heuristic_func, weight='length'):
-    open_set = []
-    heapq.heappush(open_set, (0, start_node))
-    open_set_lookup = {start_node}  # Tập để kiểm tra nhanh xem node đã có trong hàng đợi chưa
-    came_from = {}  # Để truy vết đường đi ngược lại khi tìm ra đích
-    g_score = {node: float('inf') for node in graph.nodes() }
+    open = []
+    heapq.heappush(open, (0, start_node))
+    open_set_lookup = {start_node}  # Tập để kiểm tra nhanh xem node đã có trong hàng đợi chưa vì heapq không hỗ trợ xóa phần tử bất kỳ
+    prev = {}  # Để truy vết đường đi ngược lại khi tìm ra đích
+    g_score = {node: float('inf') for node in graph.nodes() } # Khởi tạo g_score cho tất cả các node = vô cực
     g_score[start_node] = 0
-    f_score = {node: float('inf') for node in graph.nodes()}
+    f_score = {node: float('inf') for node in graph.nodes()} # Khởi tạo f_score cho tất cả các node = vô cực
     f_score[start_node] = heuristic_func(graph, start_node, end_node)
-
-    while open_set:
-        _, current_node = heapq.heappop(open_set)
-        
-        if current_node not in open_set_lookup:
+    while open:
+        _, current_node = heapq.heappop(open) # Lấy node có f_score nhỏ nhất
+        if current_node not in open_set_lookup: #Kiểm tra nếu current_node đã bị xử lý rồi thì bỏ qua.
+                                                #(heapq có thể chứa nhiều bản sao cùng node → tránh lặp lại)
             continue
-        open_set_lookup.remove(current_node) #Kiểm tra lại (tránh node đã bị bỏ qua do heapq không tự hỗ trợ xóa phần tử).
+        open_set_lookup.remove(current_node) #Nếu chưa, xóa node khỏi open_set_lookup để đánh dấu là đã xử lý.
 
         if current_node == end_node:
             path = []
             temp = current_node
-            while temp in came_from:
+            while temp in prev:
                 path.append(temp)
-                temp = came_from[temp]
+                temp = prev[temp]
             path.append(start_node)
-            print(f"Đường đi từ {start_node} đến {end_node}: {path[::-1]} \n")
+            #print(f"Đường đi từ {start_node} đến {end_node}: {path[::-1]} \n")
             return path[::-1]   # Đảo ngược để đúng thứ tự start → end
+        
 
         for neighbor in graph.neighbors(current_node):  #Duyệt các node kề với current_node
+            #print(f"Đang duyệt các node kề với {current_node}: {graph.neighbors(current_node)}\n")
             edge_data_all = graph.get_edge_data(current_node, neighbor)
+            # Lấy tất cả các thuộc tính của cạnh giữa current_node và neighbor
             if not edge_data_all:
                 continue
 
-            min_edge_weight = float('inf')
-            for edge_key in edge_data_all: 
+            Cost_current_neighbor = float('inf') #Tính g_score giữa current_node và neighbor
+            for edge_key in edge_data_all:
                 edge_attributes = edge_data_all[edge_key]
+                # đồ thị có thể có nhiều cạnh giữa 2 node
+                # Lấy cạnh có chi phí thấp nhất (min theo trọng số weight, mặc định là 'length').
                 if weight in edge_attributes:
-                    min_edge_weight = min(min_edge_weight, edge_attributes[weight])
-            
-            if min_edge_weight == float('inf'):
+                    Cost_current_neighbor = min(Cost_current_neighbor, edge_attributes[weight])
+            if Cost_current_neighbor == float('inf'):
                 continue
             
-            tentative_g_score = g_score[current_node] + min_edge_weight
+            tentative_g_score = g_score[current_node] + Cost_current_neighbor #Tính chi phí mới đến neighbor thông qua current_node.
 
+            # Nếu chi phí mới nhỏ hơn giá trị đã biết, thì cập nhật.
             if tentative_g_score < g_score.get(neighbor, float('inf')):
-                came_from[neighbor] = current_node
+                prev[neighbor] = current_node
                 g_score[neighbor] = tentative_g_score
                 f_score[neighbor] = tentative_g_score + heuristic_func(graph, neighbor, end_node)
-                if neighbor not in open_set_lookup:
-                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+                if neighbor not in open_set_lookup: # Nếu neighbor chưa được xét, thêm vào open để chờ xét trong tương lai.
+                    heapq.heappush(open, (f_score[neighbor], neighbor))
                     open_set_lookup.add(neighbor)
     return None
 
@@ -210,7 +214,7 @@ def Dijkstra(graph, start_node, end_node, heuristic_func, weight='length'):
     g_score = {node: float('inf') for node in graph.nodes()}
     g_score[start_node] = 0
     f_score = {node: float('inf') for node in graph.nodes()}
-    f_score[start_node] = heuristic_func(graph, start_node, end_node)
+    f_score[start_node] = 0
 
     while open_set:
         _, current_node = heapq.heappop(open_set)
